@@ -9,6 +9,8 @@ def __load_json_data():
 def is_credentials_json_valid():
     try:
         __load_json_data()
+        get_bot_token()
+        get_authorized_chat_ids()
         return True
     except:
         return False
