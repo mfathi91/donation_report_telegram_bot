@@ -1,0 +1,9 @@
+# Environment
+venv/
+__pycache__/
+
+# vim swp files
+.*.swp
+
+# Credentials file
+credentials.json
