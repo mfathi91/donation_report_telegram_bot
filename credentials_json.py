@@ -6,7 +6,7 @@ def __load_json_data():
         return json.load(json_file)
 
 
-def is_credentials_json_valid():
+def is_valid():
     try:
         __load_json_data()
         get_bot_token()

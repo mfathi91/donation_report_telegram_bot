@@ -8,7 +8,8 @@ from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
 
 from state import State
-from reliable_user_filter import ReliableUserFilter
+from authorized_chat_ids_filter import AuthorizedChatIdsFilter
+import credentials_json
 import my_utils
 
 
@@ -83,12 +84,15 @@ def print_help(update):
     message += '/end - end the session'
     update.message.reply_text(message)
 
+# Validating credentials.json
+if not credentials_json.is_valid():
+    raise SyntaxError('Non-existing or invalid credentials.json file.')
 
 # Configure the logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 # Create the updater
-updater = Updater(token=TOKEN, use_context=True)
+updater = Updater(token=credentials_json.get_bot_token(), use_context=True)
 dispatcher = updater.dispatcher
 
 # Setup command handler for 'start'
@@ -100,8 +104,9 @@ end_handler = CommandHandler('end', end)
 dispatcher.add_handler(end_handler)
 
 # Setup text message handler
-reliable_user_filter = ReliableUserFilter()
-text_handler = MessageHandler(Filters.text & (~Filters.command) & reliable_user_filter, process_text)
+authorized_chat_ids = credentials_json.get_authorized_chat_ids()
+authorized_chat_ids_filter = AuthorizedChatIdsFilter(authorized_chat_ids)
+text_handler = MessageHandler(Filters.text & (~Filters.command) & authorized_chat_ids_filter, process_text)
 dispatcher.add_handler(text_handler)
 
 # Setup photo message handler
