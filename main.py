@@ -60,7 +60,7 @@ def process_text(update, context):
             context.user_data['state'] = state + 1
 
     elif state == 6:
-        print(context.user_data)
+        update.message.reply_text(states_control[state - 1].next_input_request)
 
 
 def process_photo(update, context):
@@ -69,12 +69,13 @@ def process_photo(update, context):
         receipt = context.bot.getFile(update.message.photo[-1].file_id)
         receipt_path = my_utils.get_tmp_file_dir('jpg')
         receipt.download(receipt_path)
-        donor = context.user_data['donor']
-        date = context.user_data['date']
-        donation_euros = context.user_data['donation_euros']
-        exchange_rate = context.user_data['exchange_rate']
-        donation_tomans = context.user_data['donation_tomans']
-        pdf = my_utils.create_pdf(donor, date, donation_euros, exchange_rate, donation_tomans, receipt_path)
+        pdf = my_utils.create_pdf(
+            context.user_data['donor'],
+            context.user_data['date'],
+            context.user_data['donation_euros'],
+            context.user_data['exchange_rate'],
+            context.user_data['donation_tomans'],
+            receipt_path)
         context.bot.send_document(chat_id=update.effective_chat.id, document=open(pdf, 'rb'))
 
 
